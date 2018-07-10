@@ -1,0 +1,301 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:po="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:local="clr-namespace:Bnaya.Samples"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <local:BoolToVisibilityConverter x:Key="_boolToHiddenConverter"/>
+
+    <!-- Block PropertyTemplate-->
+    <DataTemplate x:Key="BlockPropertyTemplate">
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="{Binding Name}" Margin="3" Foreground="{Binding Color}"/>
+            <TextBlock Text="{Binding Value}" Margin="3" Foreground="{Binding Color}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <!-- Queues -->
+    <DataTemplate x:Key="QueueTemplate">
+        <Border BorderBrush="Black" BorderThickness="2" CornerRadius="4" Background="{Binding Color}">
+            <TextBlock Text="{Binding Data}" Margin="3" Foreground="White" FontFamily="Consolas" />
+        </Border>
+    </DataTemplate>
+
+    <!-- Postponed -->
+    <DataTemplate x:Key="PostponedMessagesTemplate">
+        <Border BorderBrush="Black" BorderThickness="2" CornerRadius="10" Background="{Binding Link.Connector.Source.Color}">
+            <TextBlock Text="{Binding MessageId}" Margin="3" Foreground="White" FontFamily="Consolas" ToolTip="{Binding Link.Connector.Source.Id}"/>
+        </Border>
+    </DataTemplate>
+
+    <!-- Queues -->
+    <DataTemplate x:Key="CommandsTemplate">
+        <Button Content="{Binding Title}" Margin="4" Style="{StaticResource GlassButton}" 
+                Background="{Binding BackColor}" Foreground="{Binding ForeColor}" 
+                Command="{Binding}">
+        </Button>
+    </DataTemplate>
+
+    <!-- Block -->
+    <DataTemplate x:Key="BlocksTemplate">
+        <Border BorderBrush="#111111" BorderThickness="2" CornerRadius="10" Margin="3"
+                    Background="{Binding Color}" Focusable="False" Padding="4">
+            <StackPanel>
+                <!-- Header -->
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Focusable="False"
+                             TextBlock.Foreground="White">
+                    <Image Source="/VisualTDF;component/Images/DragEllipse.png" Margin="4" Stretch="Uniform"
+                           Width="16" Height="16" Cursor="Hand">
+                        <i:Interaction.Behaviors>
+                            <local:DragDropListItemOnCanvasBehavior />
+                        </i:Interaction.Behaviors>
+                    </Image>
+                    <TextBlock Text="{Binding Name}" Margin="4" FontWeight="ExtraBlack" />
+                    <TextBlock Text="{Binding Id, StringFormat='{}[{0}]'}" Margin="4"/>
+                    <ToggleButton IsChecked="{Binding InfoVisibility}" Content="" Focusable="False" IsTabStop="False"
+                                          FontSize="8" Background="Transparent" Foreground="Black"
+                                          Margin="4" MinWidth="10"/>
+                </StackPanel>
+
+                <!-- Items -->
+                <ListBox VerticalAlignment="Top" HorizontalAlignment="Left" Focusable="False"
+                    ItemsSource="{Binding Queues}"
+                    ItemTemplate="{StaticResource QueueTemplate}" 
+                    Style="{StaticResource _listboxStyle}">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                </ListBox>
+
+                <!-- Postponed Messages -->
+                <ListBox VerticalAlignment="Top" HorizontalAlignment="Left" Focusable="False"
+                    ItemsSource="{Binding PostponedMessages}"
+                    ItemTemplate="{StaticResource PostponedMessagesTemplate}" 
+                    Style="{StaticResource _listboxStyle}">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                </ListBox>
+
+                <!-- Info -->
+                <StackPanel Visibility="{Binding InfoVisibility, Converter={StaticResource _boolToHiddenConverter}}" 
+                            Background="Transparent">
+                    <Border CornerRadius="4" BorderBrush="#333333" BorderThickness="1" Margin="3">
+                        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                            <ToggleButton Content="Block State"  IsChecked="{Binding StateVisibility}" Style="{StaticResource _flatButton}"
+                                          Background="#333333" Foreground="WhiteSmoke"/>
+                            <ListBox Visibility="{Binding StateVisibility, Converter={StaticResource _boolToHiddenConverter}}"
+                                ItemsSource="{Binding Properties}" 
+                                ItemTemplate="{StaticResource BlockPropertyTemplate}"
+                                Style="{StaticResource _listboxStyle}"/>
+                        </StackPanel>
+                    </Border>
+                    <StackPanel VerticalAlignment="Top" HorizontalAlignment="Stretch"  Margin="0"
+                                    Visibility="{Binding InfoVisibility, Converter={StaticResource _boolToHiddenConverter}}">
+                        <!-- Offering -->
+                        <Border CornerRadius="4" BorderBrush="#333333" BorderThickness="1" Margin="3"
+                                Visibility="{Binding IsTargetBlock, Converter={StaticResource _boolToHiddenConverter}}">
+                            <StackPanel VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                                <ToggleButton Content="Offer Message"  IsChecked="{Binding OfferingVisibility}" Style="{StaticResource _flatButton}"
+                                          Background="#333333" Foreground="WhiteSmoke"/>
+                                <StackPanel VerticalAlignment="Top" HorizontalAlignment="Stretch"  Margin="3"
+                                    Visibility="{Binding OfferingVisibility, Converter={StaticResource _boolToHiddenConverter}}" TextBlock.Foreground="WhiteSmoke">
+                                    <TextBlock Text="{Binding PushOfferingCounter.AcceptedCount, StringFormat='Accepted = {0}'}"/>
+                                    <TextBlock Text="{Binding PushOfferingCounter.PostponedCount, StringFormat='Postponed = {0}'}" />
+                                    <TextBlock Text="{Binding PushOfferingCounter.DeclinedCount, StringFormat='Declined = {0}'}" />
+                                    <TextBlock Text="{Binding PushOfferingCounter.NotAvailableCount, StringFormat='NotAvailable = {0}'}"/>
+                                    <TextBlock Text="{Binding PushOfferingCounter.DecliningPermanentlyCount, StringFormat='Declining Permanently = {0}'}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                        <!-- Pool Request -->
+                        <Border CornerRadius="4" BorderBrush="#333333" BorderThickness="1" Margin="3"
+                                Visibility="{Binding IsSourceBlock, Converter={StaticResource _boolToHiddenConverter}}">
+                            <StackPanel VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                                <ToggleButton Content="Consumed Messages"  IsChecked="{Binding PoolRequestVisibility}" Style="{StaticResource _flatButton}"
+                                          Background="#333333" Foreground="WhiteSmoke"/>
+                                <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="3"  TextBlock.Foreground="WhiteSmoke"
+                                    Visibility="{Binding PoolRequestVisibility, Converter={StaticResource _boolToHiddenConverter}}">
+                                    <TextBlock Text="{Binding PoolRequestCounters.Count, StringFormat='Total = {0}'}"/>
+                                    <TextBlock Text="{Binding PoolRequestCounters.SucceedCount, StringFormat='Succeed = {0}'}"/>
+                                    <TextBlock Text="{Binding PoolRequestCounters.FailureCount, StringFormat='Failure = {0}'}"/>
+                                    <TextBlock Text="{Binding PoolRequestCounters.CountReleaseReservation, StringFormat='Release Reservation = {0}'}"/>
+                                    <TextBlock Text="{Binding PoolRequestCounters.CountReserve, StringFormat='Reserve = {0}'}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Commands -->
+                <Border CornerRadius="4" BorderBrush="#333333" BorderThickness="1" Margin="3">
+                    <StackPanel VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                        <ToggleButton Content="Actions"  IsChecked="{Binding CommandsVisibility}" Style="{StaticResource _flatButton}"
+                                        Background="#333333" Foreground="WhiteSmoke"/>
+                        <ListBox Visibility="{Binding CommandsVisibility, Converter={StaticResource _boolToHiddenConverter}}"
+                                ItemsSource="{Binding Commands}" 
+                                ItemTemplate="{StaticResource CommandsTemplate}"
+                                Style="{StaticResource _listboxStyle}">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel IsItemsHost="True" Orientation="Horizontal" Background="Transparent"/>
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                        </ListBox>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <!-- LINK -->
+    <DataTemplate x:Key="LinksToTemplate">
+        <Grid Focusable="False">
+            <Border BorderBrush="Black" BorderThickness="2" CornerRadius="8"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Margin="3"
+                        Background="WhiteSmoke" Focusable="False">
+                <Border.RenderTransform>
+                    <TranslateTransform X="{Binding Connector.ControlLocation.Left}" Y="{Binding Connector.ControlLocation.Top}"/>
+                </Border.RenderTransform>
+                <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Focusable="False">
+                    <!-- Header -->
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/VisualTDF;component/Images/DragEllipse.png" Margin="4" Stretch="Uniform"
+                           Width="16" Height="16" Cursor="Hand">
+                            <i:Interaction.Behaviors>
+                                <local:DragDropListItemOnCanvasBehavior />
+                            </i:Interaction.Behaviors>
+                        </Image>
+                        <ToggleButton IsChecked="{Binding InfoVisibility}" Content="" Focusable="False" IsTabStop="False"
+                                          FontSize="8" Background="Transparent" Foreground="Black"
+                                          Margin="4" MinWidth="10"/>
+                        <TextBlock Text="{Binding .}" Margin="4" Focusable="False"/>
+                        <Button Margin="4" Background="Tomato" Foreground="White" FontWeight="Bold" 
+                                Style="{StaticResource CloseButton}" Width="18" Height="18" Cursor="Hand">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Click">
+                                    <cal:ActionMessage MethodName="UnlinkCommand" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </Button>
+                    </StackPanel>
+                    <StackPanel VerticalAlignment="Top" HorizontalAlignment="Stretch"  Margin="0"
+                                    Visibility="{Binding InfoVisibility, Converter={StaticResource _boolToHiddenConverter}}">
+                        <!-- Offering -->
+                        <Border CornerRadius="4" BorderBrush="#333333" BorderThickness="1" Margin="3">
+                            <StackPanel VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                                <ToggleButton Content="Offer Message"  IsChecked="{Binding OfferingVisibility}" Style="{StaticResource _flatButton}"
+                                          Background="#333333" Foreground="WhiteSmoke"/>
+                                <StackPanel VerticalAlignment="Top" HorizontalAlignment="Stretch"  Margin="3"
+                                    Visibility="{Binding OfferingVisibility, Converter={StaticResource _boolToHiddenConverter}}">
+                                    <TextBlock Text="{Binding PushOfferingCounter.AcceptedCount, StringFormat='Accepted = {0}'}"/>
+                                    <TextBlock Text="{Binding PushOfferingCounter.PostponedCount, StringFormat='Postponed = {0}'}" />
+                                    <TextBlock Text="{Binding PushOfferingCounter.DeclinedCount, StringFormat='Declined = {0}'}" />
+                                    <TextBlock Text="{Binding PushOfferingCounter.NotAvailableCount, StringFormat='NotAvailable = {0}'}"/>
+                                    <TextBlock Text="{Binding PushOfferingCounter.DecliningPermanentlyCount, StringFormat='Declining Permanently = {0}'}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                        <!-- Pool Request -->
+                        <Border CornerRadius="4" BorderBrush="#333333" BorderThickness="1" Margin="3">
+                            <StackPanel VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                                <ToggleButton Content="Consumed Messages"  IsChecked="{Binding PoolRequestVisibility}" Style="{StaticResource _flatButton}"
+                                          Background="#333333" Foreground="WhiteSmoke"/>
+                                <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="3"
+                                    Visibility="{Binding PoolRequestVisibility, Converter={StaticResource _boolToHiddenConverter}}">
+                                    <TextBlock Text="{Binding PoolRequestCounters.Count, StringFormat='Total = {0}'}"/>
+                                    <TextBlock Text="{Binding PoolRequestCounters.SucceedCount, StringFormat='Succeed = {0}'}"/>
+                                    <TextBlock Text="{Binding PoolRequestCounters.FailureCount, StringFormat='Failure = {0}'}"/>
+                                    <TextBlock Text="{Binding PoolRequestCounters.CountReleaseReservation, StringFormat='Release Reservation = {0}'}"/>
+                                    <TextBlock Text="{Binding PoolRequestCounters.CountReserve, StringFormat='Reserve = {0}'}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                        <!-- General -->
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </DataTemplate>
+
+    <!-- LINK Candidate -->
+    <DataTemplate x:Key="LinksCandidateTemplate">
+        <Grid Focusable="False" Opacity="0.7" FocusManager.IsFocusScope="False">
+            <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Focusable="False" FocusManager.IsFocusScope="False">
+                <StackPanel.RenderTransform>
+                    <TranslateTransform X="{Binding Connector.ControlLocation.Left}" Y="{Binding Connector.ControlLocation.Top}"/>
+                </StackPanel.RenderTransform>
+                <!-- Header -->
+                <Grid>
+                    <Border CornerRadius="8" BorderBrush="#333333" BorderThickness="1"  Margin="12,8,4,4"  Background="WhiteSmoke">
+                        <StackPanel>
+                            <Button Content="Connect" Margin="4" 
+                                    Style="{StaticResource GlassButton}" Background="PaleVioletRed" 
+                                    Foreground="Black" FontWeight="Bold" Focusable="False">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="AttachCommand" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+                            <Border CornerRadius="4" BorderBrush="#333333" BorderThickness="1" Margin="3">
+                                <StackPanel VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                                    <ToggleButton Content="Options"  IsChecked="{Binding OptionsVisibility}"
+                                            Style="{StaticResource _flatButton}"
+                                            Background="#333333" Foreground="WhiteSmoke" 
+                                            HorizontalAlignment="Stretch" TextBlock.TextAlignment="Center"/>
+                                    <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="3"
+                                            Visibility="{Binding OptionsVisibility, Converter={StaticResource _boolToHiddenConverter}}">
+                                        <CheckBox IsChecked="{Binding Append, Mode=TwoWay}" Content="Append" Margin="4"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="MaxMessages" Margin="4"/>
+                                            <TextBox Text="{Binding MaxMessages, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="4"/>
+                                        </StackPanel>
+                                        <CheckBox IsChecked="{Binding PropagateCompletion, Mode=TwoWay}" Content="Propagate Completion" Margin="4"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                    <Image Source="/VisualTDF;component/Images/DragEllipse.png" Margin="0" Stretch="Uniform" Cursor="Hand"
+                            Width="20" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" Focusable="False">
+                        <i:Interaction.Behaviors>
+                            <local:DragDropListItemOnCanvasBehavior />
+                        </i:Interaction.Behaviors>
+                    </Image>
+                </Grid>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+
+    <!-- Connector -->
+    <DataTemplate x:Key="ConnectorTemplate">
+        <Path Stretch="None" Stroke="DarkGray" IsHitTestVisible="False" 
+                  StrokeThickness="{Binding Thickness}" Focusable="False" FocusManager.IsFocusScope="False">
+            <Path.Data>
+                <PathGeometry>
+                    <PathGeometry.Figures>
+                        <PathFigureCollection>
+                            <PathFigure StartPoint="{Binding ConnercorPoints[0]}">
+                                <PathFigure.Segments>
+                                    <PathSegmentCollection>
+                                        <QuadraticBezierSegment Point1="{Binding ConnercorPoints[1]}" Point2="{Binding ConnercorPoints[2]}" />
+                                    </PathSegmentCollection>
+                                </PathFigure.Segments>
+                            </PathFigure>
+                        </PathFigureCollection>
+                    </PathGeometry.Figures>
+                </PathGeometry>
+            </Path.Data>
+            <Path.RenderTransform>
+                <TranslateTransform X="30" Y="15" />
+            </Path.RenderTransform>
+        </Path>
+    </DataTemplate>
+</ResourceDictionary>

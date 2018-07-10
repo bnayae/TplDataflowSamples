@@ -1,0 +1,22 @@
+1. Broadcast -> Action Loggger (separate files)
+2. Buffer -> safe switch on baound capacity
+		  -> transform in the middle (second linked to)
+		     when first activated: create fallback Action 
+					- link to the transform
+					- link to the Buffer
+					- link new transform to the buffer (next fallback)
+					- unlink the original Action and call Complete
+					- Call complete on the transform
+				- when input count == 0 unlink (check if is not happens automatically)
+3. Broadcast + Batch + Action: create logger where the Debug level exeute on low priority
+		  while other level execute on normal
+4. Process Apple and Orange with available worker
+		   [make the most of the worker which should start packing
+		   when enough fuit is available ()]
+		   (Broadcast + Batches + Join(with worker) + Action (LOG))
+		   - when worker arrived he can load single pile of 20 Apples or 30 Oranges
+		   - don't mix Apple and Orange
+		   - the assembly line is constantly getting apple and orange (randomly)
+		   - the worker is at the assembly line in constant cycle when ever it complete
+		     it work he log his work and come again to the assembly line
+		   * MAKE SURE THAT THE WORKER DON'T PEEK A SINGLE FRUIT

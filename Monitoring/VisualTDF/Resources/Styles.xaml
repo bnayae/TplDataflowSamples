@@ -1,0 +1,130 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:po="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style x:Key="_ContainerBlock" TargetType="{x:Type ListBoxItem}">
+        <Setter Property="Canvas.Left" Value="{Binding Location.Left}" />
+        <Setter Property="Canvas.Top" Value="{Binding Location.Top}" />
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="FocusManager.IsFocusScope" Value="False" />
+    </Style>
+    
+    <Style x:Key="_ContainerLink" TargetType="{x:Type ListBoxItem}">
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="FocusManager.IsFocusScope" Value="False" />
+    </Style>
+
+    <Style x:Key="_listboxStyle" TargetType="{x:Type ListBox}">
+        <Style.Resources>
+            <!--  Background of selected item when focused  -->
+            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"
+                             po:Freeze="True"
+                             Color="Transparent" />
+
+            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+            <!--  Background of selected item when not focused  -->
+            <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}"
+                             po:Freeze="True"
+                             Color="Transparent" />
+        </Style.Resources>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+    
+    <Style x:Key="_flatButton" TargetType="{x:Type ButtonBase}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ButtonBase}">
+                    <TextBlock Text="{TemplateBinding Content}" TextAlignment="{TemplateBinding TextBlock.TextAlignment}"
+                                HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                Foreground="{TemplateBinding Foreground}"
+                                Background="{TemplateBinding Background}"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="GlassButton" TargetType="{x:Type Button}">
+        <!--<Setter Property="FontSize" Value="{TemplateBinding FontSize}" />-->
+        <!--<Setter Property="Foreground" Value="White" />-->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border x:Name="ButtonBorder"
+                            Margin="0"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="2"
+                            CornerRadius="10"
+                            RenderTransformOrigin="0.5,0.5">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="1.7*" />
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" CornerRadius="13,13,0,0">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                        <GradientStop Offset="0" Color="#08FFFFFF" />
+                                        <GradientStop Offset="1" Color="#88FFFFFF" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                            </Border>
+                            <TextBlock Grid.RowSpan="2"
+                                       Margin="6,0,6,4"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontSize="{TemplateBinding FontSize}"
+                                       FontWeight="{TemplateBinding FontWeight}"
+                                       FontFamily="{TemplateBinding FontFamily}"
+                                       FontStretch="{TemplateBinding FontStretch}"
+                                       Foreground="{TemplateBinding Foreground}">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect BlurRadius="4"
+                                                      Direction="330"
+                                                      Opacity="0.5"
+                                                      ShadowDepth="2"
+                                                      Color="Black" />
+                                </TextBlock.Effect>
+                                <ContentPresenter x:Name="ButtonContentPresenter" />
+                            </TextBlock>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ButtonBorder" Property="RenderTransform">
+                                <Setter.Value>
+                                    <TransformGroup>
+                                        <ScaleTransform ScaleX="1.1" ScaleY="1.1" />
+                                    </TransformGroup>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="ButtonBorder" Property="RenderTransform">
+                                <Setter.Value>
+                                    <TransformGroup>
+                                        <ScaleTransform ScaleX="0.9" ScaleY="0.9" />
+                                    </TransformGroup>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="CloseButton" TargetType="{x:Type Button}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Image Source="/VisualTDF;component/Images/Close.png" Stretch="Uniform"
+                                    Width="{TemplateBinding Width}" Height="{TemplateBinding Height}"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>
