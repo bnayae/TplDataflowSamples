@@ -125,6 +125,7 @@
     <Compile Include="Block Reflection\ReflectBlockFactory.cs" />
     <Compile Include="Block Reflection\BufferBlock\ReflectBufferBlock.cs" />
     <Compile Include="Block Reflection\ActionBlock\ReflectActionBlock.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Hooks\HookBase.cs" />
     <Compile Include="Hooks\TargetHook.cs" />
     <Compile Include="Hooks\SourceHook.cs" />

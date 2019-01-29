@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="Exif\ExifKey.cs" />
     <Compile Include="Exif\ExifMetadata.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

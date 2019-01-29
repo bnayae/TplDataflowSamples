@@ -32,10 +32,10 @@ namespace Sela.Samples
             //cts.Token.Register(() => _ab.Complete());
 
             //Task t = GenerateDataPitfallAsync(cts.Token);
-            Task t = GenerateDataAsync(cts.Token);
+            //Task t = GenerateDataAsync(cts.Token);
 
             #endregion // Remarked
-            //Task t = GenerateDataAsync();
+            Task t = GenerateDataAsync();
 
 
             while (!t.IsCompleted)

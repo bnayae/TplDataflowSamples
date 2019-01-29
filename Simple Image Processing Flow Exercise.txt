@@ -1,0 +1,38 @@
+
+																									
+
+                                           +----------+
+									 +---> | Pixelate |---+
+									 |	   +----------+   |
+									 |                    |
++------------+      +-----------+    |		 Define:	  |     +------+
+| Downloader |---->	| Grayscale |----+	 BoundedCapacity  +---->|	|
++------------+      +-----------+    |    				  |		+------+
+									 |					  |
+                                     |     +----------+   |
+									 +---> | OilPaint |---+
+									 |	   +----------+   |
+									 |					  |
+                                     |     +----------+   |
+									 +---> | Blur     |---+
+										   +----------+
+
+
+NuGet:
+	SixLabors.ImageSharp
+	SixLabors.Fonts
+	SixLabors.Shapes.Text
+	SixLabors.ImageSharp.Drawing
+
+Code Snippets:
+
+using (Image<Rgba32> imageProcessor = Image.Load(buffer))
+using (var outStream = new MemoryStream())
+{
+    imageProcessor.Mutate(x => x
+						.OilPaint()
+                        .Grayscale()
+                        .DrawImage(img0, 1)
+                        .DrawImage(img1, 1, new Point(size, 0)));
+    imageProcessor.SaveAsJpeg(outStream);
+}
