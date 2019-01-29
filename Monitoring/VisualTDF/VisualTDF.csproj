@@ -128,6 +128,7 @@
     <Compile Include="Hooks\HookBase.cs" />
     <Compile Include="Hooks\TargetHook.cs" />
     <Compile Include="Hooks\SourceHook.cs" />
+    <Compile Include="Scenarios\101.BoundedCapacityStarvationActionMultiScenario.cs" />
     <Compile Include="Scenarios\500.ConsumeToAcceptScenario - Copy.cs" />
     <Compile Include="Scenarios\800.NonGreedyJoinScenario.cs" />
     <Compile Include="Scenarios\020.DegreeOfParallelismScenario.cs" />
