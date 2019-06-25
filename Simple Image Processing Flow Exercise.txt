@@ -20,8 +20,6 @@
 
 NuGet:
 	SixLabors.ImageSharp
-	SixLabors.Fonts
-	SixLabors.Shapes.Text
 	SixLabors.ImageSharp.Drawing
 
 Code Snippets:
