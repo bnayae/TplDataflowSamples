@@ -76,7 +76,7 @@ namespace TDF.Samples
                 #region Dataflow block Options
 
                 var downloaderOptions = new ExecutionDataflowBlockOptions
-                {
+                {                    
                     // enforce fairness, after handling n messages 
                     // the block's task will be re-schedule.
                     // this will give the opportunity for other block 
@@ -126,7 +126,7 @@ namespace TDF.Samples
                             WebClient wc = new WebClient();                            
                             Task<string> download = wc.DownloadStringTaskAsync(url);
                             Task cancel = Task.Delay(DOWNLOAD_TIMEOUT_SEC * 1000);
-                            Task any = await Task.WhenAny(download, cancel);
+                            Task any = await Task.WhenAny(download, cancel).ConfigureAwait(false);
 
                             #region Timeout validation
 
@@ -247,7 +247,7 @@ namespace TDF.Samples
 
                         WebClient wc = new WebClient();
                         // using IOCP the thread pool worker thread does return to the pool
-                        byte[] buffer = await wc.DownloadDataTaskAsync(url);
+                        byte[] buffer = await wc.DownloadDataTaskAsync(url).ConfigureAwait(false);
                         string fileName = Path.GetFileName(url);
 
                         #region Validation
@@ -266,7 +266,7 @@ namespace TDF.Samples
                                 using (Stream srm = OpenWriteAsync(name))
                                 {
 
-                                    await srm.WriteAsync(buffer, 0, buffer.Length);
+                                    await srm.WriteAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
                                     WriteToConsole("{0}: Width:{1}, Height:{2}", ConsoleColor.Yellow,
                                         fileName, image.Width, image.Height);
 
@@ -310,7 +310,7 @@ namespace TDF.Samples
                 ///////////////////////////////////////////////////////////////////////
 
                 downloader.LinkTo(contentBroadcaster, linkOption, html => html != null);
-                downloader.LinkTo(garbageA, linkOption /*, html => html == null*/); // fallback (otherwise empty messages will be stack in the block buffer and the block will never complete)
+                downloader.LinkTo(garbageA); //, linkOption /*, html => html == null*/); // fallback (otherwise empty messages will be stack in the block buffer and the block will never complete)
                 contentBroadcaster.LinkTo(imgParser, linkOption);
                 contentBroadcaster.LinkTo(linkParser, linkOption);
                 linkParser.LinkTo(linkBroadcaster, linkOption);
@@ -323,10 +323,10 @@ namespace TDF.Samples
                         (url.EndsWith(".jpg", comparison) ||
                         url.EndsWith(".png", comparison) ||
                         url.EndsWith(".gif", comparison));
-                Predicate<string> imgToGarbageFilter = url => !imgFilter(url);
+                // Predicate<string> imgToGarbageFilter = url => !imgFilter(url);
 
                 imgParser.LinkTo(writer, linkOption, imgFilter);
-                imgParser.LinkTo(garbageB, imgToGarbageFilter);
+                imgParser.LinkTo(garbageB);// , imgToGarbageFilter);
                 linkBroadcaster.LinkTo(writer, linkOption, imgFilter);
                 linkBroadcaster.LinkTo(downloader, linkOption, linkFilter);
                 //linkBroadcaster.LinkTo(garbage);
@@ -373,7 +373,7 @@ namespace TDF.Samples
                     {
                         while (!completeAll.IsCompleted)
                         {
-                            await Task.Delay(2000);
+                            await Task.Delay(2000).ConfigureAwait(false);
 
                             #region WriteToConsole (status)
 
@@ -396,8 +396,8 @@ namespace TDF.Samples
                               contentBroadcaster.Completion.IsCompleted);
                         }
 
-                            #endregion // WriteToConsole (status)
-                    });
+                        #endregion // WriteToConsole (status)
+                    }).ConfigureAwait(false);
 
                 WriteToConsole("Complete (items in the writer input buffer = {0})", ConsoleColor.Green, writer.InputCount);
 
