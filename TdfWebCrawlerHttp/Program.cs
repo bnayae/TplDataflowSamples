@@ -135,7 +135,7 @@ namespace TDF.Samples
                             //Trace.WriteLine("Downloading: " + url);
 
                             // using IOCP the thread pool worker thread does return to the pool
-                            HttpResponseMessage response = await client.GetAsync(url);
+                            HttpResponseMessage response = await client.GetAsync(url).ConfigureAwait(false);
                             if (!response.IsSuccessStatusCode)
                             {
                                 WriteToConsole("Fail to download html: [{0}] \r\n\tStatus Code = {1}", ConsoleColor.Red, url, response.StatusCode);
@@ -236,7 +236,7 @@ namespace TDF.Samples
                         HttpContent content = contentInfo.Content;
 
                         // using IOCP the thread pool worker thread does return to the pool
-                        using (Stream source = await content.ReadAsStreamAsync())
+                        using (Stream source = await content.ReadAsStreamAsync().ConfigureAwait(false))
                         using (var image = Image.FromStream(source))
                         {
                             string fileName = Path.GetFileName(contentInfo.Url);

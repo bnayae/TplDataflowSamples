@@ -22,7 +22,7 @@ namespace Sela.Samples
                 },
                 new ExecutionDataflowBlockOptions
                 {
-                    BoundedCapacity = 2 ,
+                    BoundedCapacity = 5 ,
                     //CancellationToken = cts.Token
                 });
 
@@ -54,8 +54,10 @@ namespace Sela.Samples
 
         private static async Task GenerateDataAsync()
         {
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 100; i++)
             {
+                // load data 5M
+
                 Console.WriteLine();
                 if(await _ab.SendAsync(i)) 
                     Console.WriteLine("{0}: Sent", i);
