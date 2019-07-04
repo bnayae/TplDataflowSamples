@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -14,23 +15,23 @@ namespace ImageMnifFlowUI
 
     public class Storage
     {
-        private readonly ActionBlock<(byte[] data, string topic, int index)> _worker;
+        private readonly ActionBlock<(ImmutableArray<byte> data, string topic, int index)> _worker;
 
         public Storage()
         {
             if (!Directory.Exists("Images"))
                 Directory.CreateDirectory("Images");
-            _worker = new ActionBlock<(byte[] data, string topic, int index)>(DoSaveAsync);
+            _worker = new ActionBlock<(ImmutableArray<byte> data, string topic, int index)>(DoSaveAsync);
 
         }
 
-        public ITargetBlock<(byte[] data, string topic, int index)> Target => _worker;
+        public ITargetBlock<(ImmutableArray<byte> data, string topic, int index)> Target => _worker;
 
-        private Task DoSaveAsync((byte[] buffer, string topic, int index) data)
+        private Task DoSaveAsync((ImmutableArray<byte> buffer, string topic, int index) data)
         {
-            (byte[] buffer, string topic, int index) = data;
+            (ImmutableArray<byte> buffer, string topic, int index) = data;
             string name = $@"Images\{topic}-{index}.jpg";
-            return File.WriteAllBytesAsync(name, buffer);
+            return File.WriteAllBytesAsync(name, buffer.ToBuilder().ToArray());
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
@@ -30,16 +31,16 @@ namespace ImageMnifFlowUI
 {
     internal class ViewModel
     {
-        private readonly IProgress<byte[]> _sync;
+        private readonly IProgress<ImmutableArray<byte>> _sync;
         public ViewModel()
         {
-            _sync = new Progress<byte[]>(Images.Add);
+            _sync = new Progress<ImmutableArray<byte>>(Images.Add);
             var linkOptions = new DataflowLinkOptions { PropagateCompletion = true };
 
             var storage = new Storage();
             var toUI = new ToUI(_sync);
             var grayscale = new Grayscale();
-            var fromGrayscale = new BroadcastBlock<(byte[] data, string topic, int index)>(i => i);
+            var fromGrayscale = new BroadcastBlock<(ImmutableArray<byte> data, string topic, int index)>(i => i);
 
             grayscale.Source.LinkTo(fromGrayscale, linkOptions);
             fromGrayscale.LinkTo(storage.Target, linkOptions);
@@ -63,7 +64,7 @@ namespace ImageMnifFlowUI
 
             var cats = new Downloader("cat");
             var dogs = new Downloader("dog");
-            var toEffects = new BroadcastBlock<(byte[] data, string topic, int index)>(i => i);
+            var toEffects = new BroadcastBlock<(ImmutableArray<byte> data, string topic, int index)>(i => i);
 
             toEffects.LinkTo(blur.Target, linkOptions);
             toEffects.LinkTo(oilPaint.Target, linkOptions);
@@ -83,6 +84,6 @@ namespace ImageMnifFlowUI
             blockToComplete.Complete();
         }
 
-        public ObservableCollection<byte[]> Images { get; } = new ObservableCollection<byte[]>();
+        public ObservableCollection<ImmutableArray<byte>> Images { get; } = new ObservableCollection<ImmutableArray<byte>>();
     }
 }

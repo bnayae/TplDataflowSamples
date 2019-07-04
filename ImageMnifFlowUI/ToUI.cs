@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -14,18 +15,18 @@ namespace ImageMnifFlowUI
 
     public class ToUI
     {
-        private readonly ActionBlock<(byte[] data, string topic, int index)> _worker;
-        private readonly IProgress<byte[]> _notifier;
+        private readonly ActionBlock<(ImmutableArray<byte> data, string topic, int index)> _worker;
+        private readonly IProgress<ImmutableArray<byte>> _notifier;
 
-        public ToUI(IProgress<byte[]> notifier)
+        public ToUI(IProgress<ImmutableArray<byte>> notifier)
         {
             _notifier = notifier;
-            _worker = new ActionBlock<(byte[] data, string topic, int index)>(DoSaveAsync);
+            _worker = new ActionBlock<(ImmutableArray<byte> data, string topic, int index)>(DoSaveAsync);
         }
 
-        public ITargetBlock<(byte[] data, string topic, int index)> Target => _worker;
+        public ITargetBlock<(ImmutableArray<byte> data, string topic, int index)> Target => _worker;
 
-        private void DoSaveAsync((byte[] input, string topic, int index) data)
+        private void DoSaveAsync((ImmutableArray<byte> input, string topic, int index) data)
         {
             _notifier.Report(data.input);
         }

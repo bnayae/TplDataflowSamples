@@ -17,7 +17,7 @@ namespace Sela.Samples
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
             _ab = new ActionBlock<int>(async i =>
                 {
-                    await Task.Delay(1000);
+                    await Task.Delay(1000).ConfigureAwait(false);
                     Console.WriteLine("\r\n{0}: Handled", i);
                 },
                 new ExecutionDataflowBlockOptions
@@ -31,23 +31,25 @@ namespace Sela.Samples
 
             //cts.Token.Register(() => _ab.Complete());
 
-            //Task t = GenerateDataPitfallAsync(cts.Token);
+            Task t = GenerateDataPitfallAsync(cts.Token);
             //Task t = GenerateDataAsync(cts.Token);
 
             #endregion // Remarked
-            Task t = GenerateDataAsync();
+            //Task t = GenerateDataAsync();
 
-
+            //int j = 0;
             while (!t.IsCompleted)
             {
                 Console.Write(".");
                 Thread.Sleep(100);
+                //if (j++ > 50)
+                //    _ab.Complete();
             }
-            while (!_ab.Completion.IsCompleted)
-            {
-                Console.Write("- ");
-                Thread.Sleep(100);
-            }
+            //while (!_ab.Completion.IsCompleted)
+            //{
+            //    Console.Write("- ");
+            //    Thread.Sleep(100);
+            //}
             Console.WriteLine("Done");
             Console.ReadKey();
         }
@@ -59,7 +61,7 @@ namespace Sela.Samples
                 // load data 5M
 
                 Console.WriteLine();
-                if(await _ab.SendAsync(i)) 
+                if(await _ab.SendAsync(i).ConfigureAwait(false)) 
                     Console.WriteLine("{0}: Sent", i);
                 else
                     Console.WriteLine("{0}: Rejected", i);
@@ -69,10 +71,10 @@ namespace Sela.Samples
 
         private static async Task GenerateDataPitfallAsync(CancellationToken ct)
         {
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 100; i++)
             {
                 Console.WriteLine(); 
-                if (await _ab.SendAsync(i, ct)) // don't send if canceled
+                if (await _ab.SendAsync(i, ct).ConfigureAwait(false)) // don't send if canceled
                     Console.WriteLine("{0}: Sent", i);
                 else
                     Console.WriteLine("{0}: Rejected", i);
@@ -87,7 +89,7 @@ namespace Sela.Samples
                 for (int i = 0; i < 10; i++)
                 {
                     Console.WriteLine();
-                    if (await _ab.SendAsync(i, ct)) // Hang send if canceled
+                    if (await _ab.SendAsync(i, ct).ConfigureAwait(false)) // Hang send if canceled
                         Console.WriteLine("{0}: Sent", i);
                 }
             }
