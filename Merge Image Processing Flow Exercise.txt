@@ -36,25 +36,14 @@ using (var outStream = new MemoryStream())
 }
 
 
-var imageInfo = new SKImageInfo(size, size);
-var mergeInfo = new SKImageInfo(size * 2, size);
+using (Image<Rgba32> img0 = results[0])
+using (Image<Rgba32> img1 = results[1])
+using (var imageProcessor = new Image<Rgba32>(size * 2, size))
 using (var outStream = new MemoryStream())
-using (var bitmap0 = SKBitmap.Decode(buffer1, imageInfo))
-using (var bitmap1 = SKBitmap.Decode(buffer2, imageInfo))
-using (var surface = SKSurface.Create(mergeInfo))
-using (var paint = new SKPaint())
 {
-    SKCanvas canvas = surface.Canvas;
-    canvas.DrawColor(SKColors.White);
-
-
-    // draw the bitmap through the filter
-    var rect = SKRect.Create(imageInfo.Size);
-    canvas.DrawBitmap(bitmap0, rect, paint);
-    rect = SKRect.Create(size, 0, size, size);
-    canvas.DrawBitmap(bitmap1, rect, paint);
-
-    SKData data = surface.Snapshot().Encode(SKEncodedImageFormat.Jpeg, 80);
-    data.SaveTo(outStream);
+    imageProcessor.Mutate(x => x
+                        .DrawImage(img0, 1)
+                        .DrawImage(img1, 1, new Point(size, 0)));
+    imageProcessor.SaveAsJpeg(outStream);
     byte[] manipedImage = outStream.ToArray();
 }
