@@ -18,9 +18,9 @@ namespace ImageMnifFlowUI
 
         public Storage()
         {
-            _worker = new ActionBlock<(byte[] data, string topic, int index)>(DoSaveAsync);
             if (!Directory.Exists("Images"))
                 Directory.CreateDirectory("Images");
+            _worker = new ActionBlock<(byte[] data, string topic, int index)>(DoSaveAsync);
 
         }
 

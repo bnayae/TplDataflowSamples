@@ -56,7 +56,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Other", "Other", "{52376E1C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BasicTdfDemo", "BasicTdfDemo\BasicTdfDemo.csproj", "{848C663F-16E6-4AC4-A18C-7C8D7E93CFDA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageMnifFlowUI", "ImageMnifFlowUI\ImageMnifFlowUI.csproj", "{A8E43823-61B9-47E7-8DB8-2A89D7D6AD67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageMnipFlowUI", "ImageMnifFlowUI\ImageMnipFlowUI.csproj", "{A8E43823-61B9-47E7-8DB8-2A89D7D6AD67}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageManipFlow", "ImageManipFlow\ImageManipFlow.csproj", "{37EA356B-1318-4D9C-B388-CD7E9960B486}"
 EndProject

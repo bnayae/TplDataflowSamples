@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Windows.Input;
 
@@ -46,12 +48,18 @@ namespace ImageMnifFlowUI
             var blur = new GaussianBlur();
             var oilPaint = new OilPaint();
             var pixelate = new Pixelate();
-            var toGrayscale = new BroadcastBlock<(byte[] data, string topic, int index)>(i => i);
 
-            toGrayscale.LinkTo(grayscale.Target, linkOptions);
-            blur.Source.LinkTo(toGrayscale, linkOptions);
-            oilPaint.Source.LinkTo(toGrayscale, linkOptions);
-            pixelate.Source.LinkTo(toGrayscale, linkOptions);
+            blur.Source.LinkTo(grayscale.Target/*, linkOptions*/);
+            oilPaint.Source.LinkTo(grayscale.Target/*, linkOptions*/);
+            pixelate.Source.LinkTo(grayscale.Target/*, linkOptions*/);
+
+            Task.WhenAll(
+                        blur.Source.Completion,
+                        oilPaint.Source.Completion,
+                        pixelate.Source.Completion)
+                .ContinueWith(c => grayscale.Target.Complete());
+            //Task _ = ForwardCompletionAsync(grayscale.Target,
+            //                blur.Source, oilPaint.Source /*oilPaint.Target*/, pixelate.Source);
 
             var cats = new Downloader("cat");
             var dogs = new Downloader("dog");
@@ -59,9 +67,20 @@ namespace ImageMnifFlowUI
 
             toEffects.LinkTo(blur.Target, linkOptions);
             toEffects.LinkTo(oilPaint.Target, linkOptions);
-            toEffects.LinkTo(pixelate.Target, linkOptions, x => x.topic == "dog");
-            dogs.Source.LinkTo(toEffects, linkOptions);
-            cats.Source.LinkTo(toEffects, linkOptions);
+            toEffects.LinkTo(pixelate.Target, linkOptions, x => x.topic == "cat");
+            dogs.Source.LinkTo(toEffects/*, linkOptions*/);
+            cats.Source.LinkTo(toEffects/*, linkOptions*/);
+            Task _ = ForwardCompletionAsync(toEffects,
+                            dogs.Source, cats.Source );
+        }
+
+        private async Task ForwardCompletionAsync(
+            IDataflowBlock blockToComplete,
+            params IDataflowBlock[] triggers)
+        {
+            var tasks = triggers.Select(t => t.Completion);
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+            blockToComplete.Complete();
         }
 
         public ObservableCollection<byte[]> Images { get; } = new ObservableCollection<byte[]>();

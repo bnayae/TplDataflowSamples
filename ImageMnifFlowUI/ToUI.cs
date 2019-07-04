@@ -19,8 +19,8 @@ namespace ImageMnifFlowUI
 
         public ToUI(IProgress<byte[]> notifier)
         {
-            _worker = new ActionBlock<(byte[] data, string topic, int index)>(DoSaveAsync);
             _notifier = notifier;
+            _worker = new ActionBlock<(byte[] data, string topic, int index)>(DoSaveAsync);
         }
 
         public ITargetBlock<(byte[] data, string topic, int index)> Target => _worker;

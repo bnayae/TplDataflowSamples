@@ -19,14 +19,15 @@ namespace ImageMnifFlowUI
 
         public Downloader(string topic)
         {
-            URL = $"https://source.unsplash.com/1000x1000/?{topic}/";
+            // URL = $"https://source.unsplash.com/1000x1000/?{topic}/";
+            URL = $"https://petapixel.com/assets/uploads/2019/07/Overall-Winner-and-1st-Oldies-Denise-Czichocki-%C2%A9.jpg";
             _worker = new TransformBlock<int, (byte[] data, string topic, int index)>(DownloadAsync);
+            _topic = topic;
             for (int i = 0; i < 20; i++)
             {
                 _worker.Post(i);
             }
             _worker.Complete();
-            _topic = topic;
         }
 
         public ISourceBlock<(byte[] data, string topic, int index)> Source => _worker;
