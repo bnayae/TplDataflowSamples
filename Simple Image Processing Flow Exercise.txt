@@ -31,6 +31,6 @@ using (var outStream = new MemoryStream())
 						.OilPaint()
                         .Grayscale()
                         .DrawImage(img0, 1)
-                        .DrawImage(img1, 1, new Point(size, 0)));
+                        .DrawImage(img1, new Point(size, 0), 1));
     imageProcessor.SaveAsJpeg(outStream);
 }

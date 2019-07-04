@@ -12,23 +12,22 @@ using SixLabors.ImageSharp.Processing;
 
 namespace Bnaya.Samples
 {
-
     public class ToUI
     {
-        private readonly ActionBlock<(ImmutableArray<byte> data, string topic, int index)> _worker;
+        private readonly ActionBlock<ImageState> _worker;
         private readonly IProgress<ImmutableArray<byte>> _notifier;
 
         public ToUI(IProgress<ImmutableArray<byte>> notifier)
         {
             _notifier = notifier;
-            _worker = new ActionBlock<(ImmutableArray<byte> data, string topic, int index)>(DoSaveAsync);
+            _worker = new ActionBlock<ImageState>(DoSaveAsync);
         }
 
-        public ITargetBlock<(ImmutableArray<byte> data, string topic, int index)> Target => _worker;
+        public ITargetBlock<ImageState> Target => _worker;
 
-        private void DoSaveAsync((ImmutableArray<byte> input, string topic, int index) data)
+        private void DoSaveAsync(ImageState data)
         {
-            _notifier.Report(data.input);
+            _notifier.Report(data.Data);
         }
     }
 

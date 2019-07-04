@@ -15,24 +15,24 @@ namespace Bnaya.Samples
 
     public abstract class EffectBase
     {
-        private readonly TransformBlock<(ImmutableArray<byte> data, string topic, int index), (ImmutableArray<byte> data, string topic, int index)> _worker;
+        private readonly TransformBlock<ImageState, ImageState> _worker;
 
         public EffectBase()
         {
-            _worker = new TransformBlock<(ImmutableArray<byte> data, string topic, int index), (ImmutableArray<byte> data, string topic, int index)>(DoEffect);
+            _worker = new TransformBlock<ImageState, ImageState>(DoEffectAsync);
         }
 
-        public ISourceBlock<(ImmutableArray<byte> data, string topic, int index)> Source => _worker;
-        public ITargetBlock<(ImmutableArray<byte> data, string topic, int index)> Target => _worker;
+        public ISourceBlock<ImageState> Source => _worker;
+        public ITargetBlock<ImageState> Target => _worker;
 
-        protected virtual (ImmutableArray<byte> data, string topic, int index) DoEffect((ImmutableArray<byte> input, string topic, int index) data)
+        protected virtual ImageState DoEffectAsync(ImageState data)
         {
             (ImmutableArray<byte> input, _, _) = data;
             Image<Rgba32> image = Image.Load(input.ToBuilder().ToArray());
             image.Mutate(OnEffect);
             var output = new MemoryStream();
             image.SaveAsJpeg(output);
-            return (ImmutableArray.CreateRange(output.ToArray()), data.topic, data.index);
+            return (ImmutableArray.CreateRange(output.ToArray()), data.Topic, data.Index);
         }
 
         protected abstract void OnEffect(IImageProcessingContext<Rgba32> context);

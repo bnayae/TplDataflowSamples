@@ -10,7 +10,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
-namespace ImageMnifFlowUI
+namespace Bnaya.Samples
 {
 
     public class Storage

@@ -25,9 +25,8 @@ using System.Windows.Input;
 //  				         +---> | Blur     |---+	            
 //  				        	   +----------+		            
 
-// TODO: Immutable array
 
-namespace ImageMnifFlowUI
+namespace Bnaya.Samples
 {
     internal class ViewModel
     {

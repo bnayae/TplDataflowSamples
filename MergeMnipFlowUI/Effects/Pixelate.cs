@@ -12,12 +12,12 @@ using SixLabors.ImageSharp.Processing;
 namespace Bnaya.Samples
 {
 
-    public class Grayscale : EffectBase
+    public class Pixelate: EffectBase
     {
         protected override void OnEffect(
             IImageProcessingContext<Rgba32> context)
         {
-            context.Grayscale();
+            context.Pixelate(15);
         }
     }
 }
