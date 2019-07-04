@@ -30,7 +30,7 @@ namespace Bnaya.Samples
         private readonly IProgress<ImmutableArray<byte>> _sync;
         public ViewModel()
         {
-            _sync = new Progress<ImmutableArray<byte>>(Images.Add);
+            _sync = new Progress<ImmutableArray<byte>>(m => Images.Add(m.ToBuilder().ToArray()));
             var linkOptions = new DataflowLinkOptions { PropagateCompletion = true };
 
             var toUI = new ToUI(_sync);
@@ -47,8 +47,7 @@ namespace Bnaya.Samples
             Task _ = ForwardCompletionAsync(merge.Block,
                             grayscale.Source, pixelate.Source);
 
-            var dogs = new Downloader("dog");
-            //dogs.Source.LinkTo(toUI.Target);
+            var dogs = new Downloader();
             var toEffects = new BroadcastBlock<ImageState>(i => i);
 
             toEffects.LinkTo(grayscale.Target, linkOptions);
@@ -65,6 +64,6 @@ namespace Bnaya.Samples
             blockToComplete.Complete();
         }
 
-        public ObservableCollection<ImmutableArray<byte>> Images { get; } = new ObservableCollection<ImmutableArray<byte>>();
+        public ObservableCollection<byte[]> Images { get; } = new ObservableCollection<byte[]>();
     }
 }

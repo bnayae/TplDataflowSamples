@@ -16,15 +16,13 @@ namespace Bnaya.Samples
     {
         private readonly TransformBlock<int, ImageState> _worker;
         private readonly List<string> URLS = new List<string>();
-        private readonly string _topic;
 
-        public Downloader(string topic)
+        public Downloader()
         {
-            //URL = $"https://source.unsplash.com/1000x1000/?{topic}/";
-            URLS.Add("https://petapixel.com/assets/uploads/2019/07/Overall-Winner-and-1st-Oldies-Denise-Czichocki-%C2%A9.jpg");
+            URLS.Add("https://source.unsplash.com/400x400/");
+            // URLS.Add("https://petapixel.com/assets/uploads/2019/07/Overall-Winner-and-1st-Oldies-Denise-Czichocki-%C2%A9.jpg");
             // URLS.Add("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4E8dq0lh30LtZkMO5iSHqSXK44tgod2tRUp91oZoT-ZxJifHJKA");
             _worker = new TransformBlock<int, ImageState>(DownloadAsync);
-            _topic = topic;
             for (int i = 0; i < 20; i++)
             {
                 _worker.Post(i);
@@ -40,7 +38,8 @@ namespace Bnaya.Samples
             {
                 string url = URLS[i % URLS.Count];
                 var data = await http.GetByteArrayAsync(url).ConfigureAwait(false);
-                return new ImageState(data, _topic, i);
+                var state = new ImageState(data, "", i);
+                return state;
             }
         }
     }
